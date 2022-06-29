@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\Applications\Applications.csproj" />
+    <ProjectReference Include="..\Applications\Applications.csproj" />
   </ItemGroup>
 
 </Project>

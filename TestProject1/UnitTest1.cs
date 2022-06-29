@@ -1,4 +1,5 @@
-using Applications.PrimaryOperation;
+using Applications;
+using System.Diagnostics;
 
 namespace TestProject1
 {
@@ -10,77 +11,71 @@ namespace TestProject1
         }
 
         /// <summary>
-        /// Проверяю Сложение
+        /// Проверяю, что правильно введённые символы сделают правильный вывод в консоль
         /// </summary>
         [Test]
-        public void Addition()
+        public void TestInputStringIsCorrect()
         {
-            Calculate calculate = new Calculate("5+5");
-            float test = calculate.Calc();
+           CheckingCharacters checkingCharacters = new CheckingCharacters();
 
-            Assert.AreEqual(10, test, message:"Ответ должен быть 10");
+            Assert.That(checkingCharacters.CheckValue("2+2"), Does.Contain("2+2"));
         }
 
         /// <summary>
-        /// Проверяю Вычитание
+        /// Проверяю ввод. Если пользователь вводит символ, которого нет
+        /// в массиве разрешённых символов, то выводится соответствующее сообщение
         /// </summary>
         [Test]
-        public void Subtraction()
+        public void TestInputStringNotCorrect()
         {
-            Calculate calculate = new Calculate("6-5");
-            float test = calculate.Calc();
+           CheckingCharacters checkingCharacters = new CheckingCharacters();
 
-            Assert.AreEqual(1, test, message: "Ответ должен быть 1");
+            Assert.That(checkingCharacters.CheckValue("h"), Does.Contain("Присутствует неверный символ"));
         }
 
         /// <summary>
-        /// Проверяю умножение
+        /// Проверяю, чтобы в начале небыло знаков операций.
+        /// К сожалению, на данный момент не решил проблему,
+        /// как можно правильно посчитать, если в начале указано отрицательное число.
         /// </summary>
         [Test]
-        public void Multiplication()
+        public void TestInputStringMinusOrAnotherFirst()
         {
-            Calculate calculate = new Calculate("2*2");
-            float test = calculate.Calc();
+           CheckingCharacters checkingCharacters = new CheckingCharacters();
 
-            Assert.AreEqual(4, test, message: "Ответ должен быть 4");
-        }
-        
-        /// <summary>
-        /// Проверяю деление
-        /// </summary>
-        [Test]
-        public void Division()
-        {
-            Calculate calculate = new Calculate("9/3");
-            float test = calculate.Calc();
-
-            Assert.AreEqual(3, test, message: "Ответ должен быть 3");
-        }
-
-
-        /// <summary>
-        /// Проверяю чуть более сложный запрос
-        /// </summary>
-        [Test]
-        public void ASlightlyComplicatedQuery()
-        {
-            Calculate calculate = new Calculate("1+2-3+(5*2)");
-            float test = calculate.Calc();
-
-            Assert.AreEqual(10, test, message:"Ответ должен быть 10");
+            Assert.That(checkingCharacters.CheckValue("+5"), Does.Contain("Извинете. Знак '+' не может быть в начале"));
         }
 
         /// <summary>
-        /// Проверяю на потерю скобки
+        /// Проверяю правильность конвертации. Если всё тип топ
+        /// то в вывод попадёт то, как выглядит запись
         /// </summary>
-        [Test]
-        public void MissStamples()
+        public void TestConvertToNotation()
         {
-            Calculate calculate = new Calculate("2+(");
-            float test = calculate.Calc();
+            ExpressionConverter expressionConverter = new ExpressionConverter();
 
-            Assert.AreEqual(2, test, message: "Ответ должен быть 2");
+            Assert.That(expressionConverter.Expression("5+6/(5*7)+10"), Does.Contain("5 6 5 7 * / 10 + +"));
         }
 
+        /// <summary>
+        /// Проверяю работу ключевого метода.
+        /// </summary>
+        [Test]
+        public void NotationTestSuccess()
+        {
+            Calculate calculate = new Calculate();
+            Assert.AreEqual(15.171428571428571d, calculate.Counting("5 6 5 7 * / 10 + +"));
+        }
+
+        /// <summary>
+        /// Проверяю работу ключевого метода с более сложныи выражением.
+        /// </summary>
+        [Test]
+        public void NotationTestSuccessHarder()
+        {
+            Calculate calculate = new Calculate();
+
+            Assert.AreEqual(100005.17142857143d, calculate.Counting("5 6 5 7 * / 10 5 ^ + +"));
+        }
     }
 }
